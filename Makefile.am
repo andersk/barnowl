@@ -78,4 +78,12 @@ install-exec-hook:
 	mv -f $(DESTDIR)$(bindir)/$(call do_transform,barnowl.bin) \
 	      $(DESTDIR)$(bindir)/$(call do_transform,barnowl)
 
+SPLINT = splint -badflag +unixlib
+SPLINTFLAGS = -weak
+SPLINT_C = $(filter %.c,$(barnowl_bin_SOURCES))
+
+splint: CC=$(SPLINT)
+splint: $(SPLINT_C) $(GEN_H)
+	$(COMPILE) $(SPLINTFLAGS) $(SPLINT_C)
+
 SUBDIRS = libfaim perl
