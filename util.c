@@ -392,7 +392,7 @@ void *owl_realloc(void *ptr, size_t size)
 /* allocates memory and returns the string or null.
  * caller must free the string. 
  */
-char *owl_sprintf(const char *fmt, ...)
+char *__attribute__((format(printf, 1, 2))) owl_sprintf(const char *fmt, ...)
 {
   va_list ap;
   char *ret = NULL;
