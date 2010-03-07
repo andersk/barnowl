@@ -9,6 +9,7 @@
 #ifndef INC_OWL_H
 #define INC_OWL_H
 
+#include <stdbool.h>
 #ifndef OWL_PERL
 #include <curses.h>
 #endif
@@ -35,7 +36,6 @@
 typedef void WINDOW;
 /* logout is defined in FreeBSD. */
 #define logout logout_
-/* aim.h defines bool */
 #define HAS_BOOL
 #include <perl.h>
 #include "owl_perl.h"
