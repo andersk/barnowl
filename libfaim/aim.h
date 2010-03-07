@@ -17,6 +17,7 @@
 #include <aim_cbtypes.h>
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
@@ -41,9 +42,9 @@ extern "C" {
 #endif
 
 /* XXX adjust these based on autoconf-detected platform */
-typedef unsigned char fu8_t;
-typedef unsigned short fu16_t;
-typedef unsigned int fu32_t;
+typedef uint8_t fu8_t;
+typedef uint16_t fu16_t;
+typedef uint32_t fu32_t;
 typedef fu32_t aim_snacid_t;
 typedef fu16_t flap_seqnum_t;
 
