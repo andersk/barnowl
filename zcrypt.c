@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include <errno.h>
 
 #include "config.h"
 
@@ -565,7 +566,8 @@ FILE *GetZephyrPipe(const char *class, const char *instance, const ZWRITEOPTIONS
 void CloseZephyrPipe(FILE *pipe)
 {
   fclose(pipe);
-  waitpid(zephyrpipe_pid, NULL, 0);
+  while (waitpid(zephyrpipe_pid, NULL, 0) == -1 && errno == EINTR)
+    ;
   zephyrpipe_pid = 0;
 }
 

@@ -6,6 +6,7 @@
 #include <sys/filio.h>
 #endif
 #include <sys/wait.h>
+#include <errno.h>
 
 /* starts up popexec in a new viewwin */
 owl_popexec *owl_popexec_new(const char *command)
@@ -158,7 +159,9 @@ void owl_popexec_viewwin_onclose(owl_viewwin *vwin, void *data)
     /* TODO: we should handle the case where SIGTERM isn't good enough */
     rv = kill(pe->pid, SIGTERM);
     owl_function_debugmsg("kill of pid %d returned %d", pe->pid, rv);
-    rv = waitpid(pe->pid, &status, 0);
+    do
+      rv = waitpid(pe->pid, &status, 0);
+    while (rv == -1 && errno == EINTR);
     owl_function_debugmsg("waidpid returned %d, status %d", rv, status);
     pe->pid = 0;
   }

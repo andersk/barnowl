@@ -6,6 +6,7 @@
 #include <poll.h>
 #include <fcntl.h>
 #include <string.h>
+#include <errno.h>
 
 #include <glib.h>
 
@@ -91,7 +92,8 @@ int call_filter(const char *prog, const char *const *argv, const char *in, char 
     close(wfd[0]);
     err = send_receive(rfd[0], wfd[1], in, out);
     if(err == 0) {
-      waitpid(pid, status, 0);
+      while (waitpid(pid, status, 0) == -1 && errno == EINTR)
+        ;
     }
   } else {
     /* child */
