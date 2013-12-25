@@ -758,7 +758,7 @@ void owl_message_create_from_znotice(owl_message *m, const ZNotice_t *n)
 #endif /* ZNOTICE_SOCKADDR */
 
   /* set the body */
-  owl_message_set_attribute(m, "body", owl_zephyr_get_message(n, m), g_free);
+  owl_zephyr_put_body(n, m);
 
   /* if zcrypt is enabled try to decrypt the message */
   if (owl_global_is_zcrypt(&g) && !strcasecmp(n->z_opcode, "crypt")) {

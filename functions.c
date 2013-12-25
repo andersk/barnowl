@@ -1479,6 +1479,10 @@ void owl_function_info(void)
 	owl_fmtext_appendf_normal(&fm, "  Multi notc: %s\n", n->z_multinotice);
 	owl_fmtext_appendf_normal(&fm, "  Num other : %i\n", n->z_num_other_fields);
 	owl_fmtext_appendf_normal(&fm, "  Msg Len   : %i\n", n->z_message_len);
+	owl_fmtext_appendf_normal(&fm, "  Msg       : ");
+	for (const char *p = n->z_message; p < n->z_message + n->z_message_len; p++)
+	    owl_fmtext_appendf_normal(&fm, "%02hhx ", *p);
+	owl_fmtext_appendf_normal(&fm, "\n");
 
 	fields=owl_zephyr_get_num_fields(n);
 	owl_fmtext_appendf_normal(&fm, "  Fields    : %i\n", fields);
