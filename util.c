@@ -379,29 +379,6 @@ CALLER_OWN char *owl_util_get_default_tty(void)
   return(out);
 }
 
-/* strip leading and trailing new lines.  Caller must free the
- * return.
- */
-CALLER_OWN char *owl_util_stripnewlines(const char *in)
-{
-  
-  char  *tmp, *ptr1, *ptr2, *out;
-
-  ptr1=tmp=g_strdup(in);
-  while (ptr1[0]=='\n') {
-    ptr1++;
-  }
-  ptr2=ptr1+strlen(ptr1)-1;
-  while (ptr2>ptr1 && ptr2[0]=='\n') {
-    ptr2[0]='\0';
-    ptr2--;
-  }
-
-  out=g_strdup(ptr1);
-  g_free(tmp);
-  return(out);
-}
-
 
 /* If filename is a link, recursively resolve symlinks.  Otherwise, return the filename
  * unchanged.  On error, call owl_function_error and return NULL.

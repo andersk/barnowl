@@ -683,7 +683,6 @@ void owl_message_create_from_znotice(owl_message *m, const ZNotice_t *n)
 #else /* !ZNOTICE_SOCKADDR */
   struct hostent *hent;
 #endif /* ZNOTICE_SOCKADDR */
-  char *tmp;
   int len;
 
   owl_message_init(m);
@@ -759,13 +758,7 @@ void owl_message_create_from_znotice(owl_message *m, const ZNotice_t *n)
 #endif /* ZNOTICE_SOCKADDR */
 
   /* set the body */
-  tmp=owl_zephyr_get_message(n, m);
-  if (owl_global_is_newlinestrip(&g)) {
-    owl_message_set_attribute(m, "body", owl_util_stripnewlines(tmp), g_free);
-    g_free(tmp);
-  } else {
-    owl_message_set_attribute(m, "body", tmp, g_free);
-  }
+  owl_message_set_attribute(m, "body", owl_zephyr_get_message(n, m), g_free);
 
   /* if zcrypt is enabled try to decrypt the message */
   if (owl_global_is_zcrypt(&g) && !strcasecmp(n->z_opcode, "crypt")) {
