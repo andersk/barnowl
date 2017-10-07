@@ -379,29 +379,6 @@ CALLER_OWN char *owl_util_get_default_tty(void)
   return(out);
 }
 
-/* strip leading and trailing new lines.  Caller must free the
- * return.
- */
-CALLER_OWN char *owl_util_stripnewlines(const char *in)
-{
-  
-  char  *tmp, *ptr1, *ptr2, *out;
-
-  ptr1=tmp=g_strdup(in);
-  while (ptr1[0]=='\n') {
-    ptr1++;
-  }
-  ptr2=ptr1+strlen(ptr1)-1;
-  while (ptr2>ptr1 && ptr2[0]=='\n') {
-    ptr2[0]='\0';
-    ptr2--;
-  }
-
-  out=g_strdup(ptr1);
-  g_free(tmp);
-  return(out);
-}
-
 
 /* If filename is a link, recursively resolve symlinks.  Otherwise, return the filename
  * unchanged.  On error, call owl_function_error and return NULL.
@@ -607,6 +584,21 @@ CALLER_OWN char *owl_strip_format_chars(const char *in)
     r = g_strdup("");
   }
   return r;
+}
+
+/* Check whether in is not valid UTF-8 or has format characters. */
+bool owl_needs_convert(const char *in)
+{
+  const char *p;
+  if (!g_utf8_validate(in, -1, NULL))
+    return true;
+  for (p = strchr(in, OWL_FMTEXT_UC_STARTBYTE_UTF8);
+       p != NULL;
+       p = strchr(p + 1, OWL_FMTEXT_UC_STARTBYTE_UTF8)) {
+    if (owl_fmtext_is_format_char(g_utf8_get_char(p)))
+      return true;
+  }
+  return false;
 }
 
 /* If in is not UTF-8, convert from ISO-8859-1. We may want to allow

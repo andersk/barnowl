@@ -616,19 +616,15 @@ int owl_zephyr_get_num_fields(const void *n)
 #endif
 
 #ifdef HAVE_LIBZEPHYR
-/* return a pointer to the message, place the message length in k
- * caller must free the return
- */
-CALLER_OWN char *owl_zephyr_get_message(const ZNotice_t *n, const owl_message *m)
+void owl_zephyr_put_body(const ZNotice_t *n, owl_message *m)
 {
 #define OWL_NFIELDS	5
   int i;
   char *fields[OWL_NFIELDS + 1];
-  char *msg = NULL;
 
   /* don't let ping messages have a body */
   if (!strcasecmp(n->z_opcode, "ping")) {
-    return(g_strdup(""));
+    owl_message_set_attribute(m, "body", "", NULL);
   }
 
   for(i = 0; i < OWL_NFIELDS; i++)
@@ -637,32 +633,34 @@ CALLER_OWN char *owl_zephyr_get_message(const ZNotice_t *n, const owl_message *m
   /* deal with MIT NOC messages */
   if (!strcasecmp(n->z_default_format, "@center(@bold(NOC Message))\n\n@bold(Sender:) $1 <$sender>\n@bold(Time:  ) $time\n\n@italic($opcode service on $instance $3.) $4\n")) {
 
-    msg = g_strdup_printf("%s service on %s %s\n%s", n->z_opcode, n->z_class_inst, fields[3], fields[4]);
+    owl_message_set_attribute(m, "body", g_strdup_printf("%s service on %s %s\n%s", n->z_opcode, n->z_class_inst, fields[3], fields[4]), g_free);
   }
   /* deal with MIT Discuss messages */
   else if (!strcasecmp(n->z_default_format, "New transaction [$1] entered in $2\nFrom: $3 ($5)\nSubject: $4") ||
            !strcasecmp(n->z_default_format, "New transaction [$1] entered in $2\nFrom: $3\nSubject: $4")) {
     
-    msg = g_strdup_printf("New transaction [%s] entered in %s\nFrom: %s (%s)\nSubject: %s",
-                          fields[1], fields[2], fields[3], fields[5], fields[4]);
+    owl_message_set_attribute(m, "body", g_strdup_printf("New transaction [%s] entered in %s\nFrom: %s (%s)\nSubject: %s",
+							 fields[1], fields[2], fields[3], fields[5], fields[4]), g_free);
   }
   /* deal with MIT Moira messages */
   else if (!strcasecmp(n->z_default_format, "MOIRA $instance on $fromhost:\n $message\n")) {
-    msg = g_strdup_printf("MOIRA %s on %s: %s",
-                          n->z_class_inst,
-                          owl_message_get_hostname(m),
-                          fields[1]);
+    owl_message_set_attribute(m, "body", g_strdup_printf("MOIRA %s on %s: %s",
+							 n->z_class_inst,
+							 owl_message_get_hostname(m),
+							 fields[1]), g_free);
   } else {
-    if (owl_zephyr_get_num_fields(n) == 1)
-      msg = g_strdup(fields[1]);
-    else
-      msg = g_strdup(fields[2]);
+    i = owl_zephyr_get_num_fields(n) == 1 ? 1 : 2;
+    const char *f = owl_zephyr_get_raw_field(n, i);
+    if (memchr(f, 0, n->z_message + n->z_message_len - f) == NULL ||
+	owl_needs_convert(f)) {
+      owl_message_set_attribute(m, "body", g_strdup(fields[i]), g_free);
+    } else {
+      owl_message_set_attribute(m, "body", f, NULL);
+    }
   }
 
   for (i = 0; i < OWL_NFIELDS; i++)
     g_free(fields[i + 1]);
-
-  return msg;
 }
 #endif
 

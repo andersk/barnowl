@@ -126,9 +126,6 @@ void owl_variable_add_defaults(owl_vardict *vd)
   OWLVAR_BOOL( "smartstrip" /* %OwlVarStub */, 1,
 	       "strip kerberos instance for reply", "");
 
-  OWLVAR_BOOL( "newlinestrip" /* %OwlVarStub */, 1,
-	       "strip leading and trailing newlines", "");
-
   OWLVAR_BOOL( "displayoutgoing" /* %OwlVarStub */, 1,
 	       "display outgoing messages", "" );
 
